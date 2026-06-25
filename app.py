@@ -7,7 +7,7 @@ from openai import OpenAI
 import json
 
 # Configuración de la página
-st.set_page_config(page_title="AI Bet Generator", page_icon="🤖", layout="wide")
+st.set_page_config(page_title="Apuestas Deportivas del Efra - Generador IA", page_icon="🤖", layout="wide")
 
 # Diccionario de iconos de deportes
 SPORT_ICONS = {
@@ -107,7 +107,7 @@ def generate_ai_analysis(api_key, match_info):
 
 def main():
     st.markdown("<h1 style='text-align: center;'>🤖 AI Sports Bet Generator</h1>", unsafe_allow_html=True)
-    st.markdown("<p style='text-align: center; color: gray;'>Pronósticos IA en tiempo real | Hora Colombia ⏰</p>", unsafe_allow_html=True)
+    st.markdown("<p style='text-align: center; color: gray;'>Pronósticos IA en tiempo real | By Efrain Sarmiento ⏰</p>", unsafe_allow_html=True)
     st.divider()
 
     # Leer claves desde Streamlit Secrets
