@@ -3,3 +3,4 @@ pandas
 pytz
 requests
 openai
+plotly
