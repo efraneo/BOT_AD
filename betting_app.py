@@ -1,5 +1,4 @@
 import streamlit as st
-import pandas as pd
 from datetime import datetime, timedelta
 import pytz
 import requests
@@ -27,7 +26,7 @@ def get_sports_matches(api_key):
                     match_time = datetime.fromisoformat(match['commence_time'][:-1]).astimezone(col_tz)
                     if start_of_week <= match_time.date() <= end_of_week:
                         matches_this_week.append({
-                            "sport_key": sport_key, "sport_title": sport_key.replace('_', ' ').title(), "icon": SPORT_ICONS.get(sport_key, "🏆"),
+                            "sport_title": sport_key.replace('_', ' ').title(), "icon": SPORT_ICONS.get(sport_key, "🏆"),
                             "match_time": match_time, "home_team": match['home_team'], "away_team": match['away_team'], "bookmakers": match['bookmakers']
                         })
         except: pass
@@ -37,7 +36,37 @@ def get_sports_matches(api_key):
 def generate_ai_analysis(api_key, match_info):
     client = OpenAI(api_key=api_key)
     odds_str = "".join([f"{bm['title']}: " + " | ".join([f"{o['name']} @ {o['price']}" for m in bm['markets'] if m['key']=='h2h' for o in m['outcomes']]) + "\n" for bm in match_info['bookmakers'][:3]])
-    prompt = f"""Actúa como un tipster deportivo PRO. Analiza {match_info['home_team']} vs {match_info['away_team']} ({match_info['sport_title']}). Cuotas: {odds_str}. Da 4 opciones por nivel de riesgo. Devuelve JSON: {{"conclusiones": ["c1","c2","c3","c4"], "bajo_riesgo": [{{"mercado":"m","explicacion":"e","pick":"p"}}], "riesgo_medio": [{{"mercado":"m","explicacion":"e","pick":"p"}}], "alto_riesgo": [{{"mercado":"m","explicacion":"e","pick":"p"}}], "analisis_ia":"texto", "consenso":["c1","c2"]}}"""
+    
+    prompt = f"""Actúa como un tipster deportivo de nivel PRO. Analiza {match_info['home_team']} vs {match_info['away_team']} ({match_info['sport_title']}).
+    Cuotas actuales: {odds_str}
+    
+    Devuelve ÚNICAMENTE un JSON válido. Es OBLIGATORIO que cada array de riesgo tenga exactamente 4 apuestas alternativas (total 12). Usa mercados como tiros de esquina, ambos marcan, hándicap, tarjetas, etc.
+    
+    Estructura exacta:
+    {{
+      "conclusiones": ["Conclusión 1", "Conclusión 2", "Conclusión 3", "Conclusión 4"],
+      "bajo_riesgo": [
+        {{"mercado": "Nombre", "explicacion": "Por qué", "pick": "El Pick: [Apuesta] @ [Cuota] en [Casa]"}},
+        {{"mercado": "Nombre", "explicacion": "Por qué", "pick": "El Pick: [Apuesta] @ [Cuota] en [Casa]"}},
+        {{"mercado": "Nombre", "explicacion": "Por qué", "pick": "El Pick: [Apuesta] @ [Cuota] en [Casa]"}},
+        {{"mercado": "Nombre", "explicacion": "Por qué", "pick": "El Pick: [Apuesta] @ [Cuota] en [Casa]"}}
+      ],
+      "riesgo_medio": [
+        {{"mercado": "Nombre", "explicacion": "Por qué", "pick": "El Pick: [Apuesta] @ [Cuota] en [Casa]"}},
+        {{"mercado": "Nombre", "explicacion": "Por qué", "pick": "El Pick: [Apuesta] @ [Cuota] en [Casa]"}},
+        {{"mercado": "Nombre", "explicacion": "Por qué", "pick": "El Pick: [Apuesta] @ [Cuota] en [Casa]"}},
+        {{"mercado": "Nombre", "explicacion": "Por qué", "pick": "El Pick: [Apuesta] @ [Cuota] en [Casa]"}}
+      ],
+      "alto_riesgo": [
+        {{"mercado": "Nombre", "explicacion": "Por qué", "pick": "El Pick: [Apuesta] @ [Cuota] en [Casa]"}},
+        {{"mercado": "Nombre", "explicacion": "Por qué", "pick": "El Pick: [Apuesta] @ [Cuota] en [Casa]"}},
+        {{"mercado": "Nombre", "explicacion": "Por qué", "pick": "El Pick: [Apuesta] @ [Cuota] en [Casa]"}},
+        {{"mercado": "Nombre", "explicacion": "Por qué", "pick": "El Pick: [Apuesta] @ [Cuota] en [Casa]"}}
+      ],
+      "analisis_ia": "Análisis profundo de 2 párrafos.",
+      "consenso": ["Resumen 1", "Resumen 2"]
+    }}
+    """
     try:
         response = client.chat.completions.create(model="gpt-4o-mini", messages=[{"role": "user", "content": prompt}], response_format={"type": "json_object"})
         return json.loads(response.choices[0].message.content)
