@@ -7,7 +7,7 @@ from openai import OpenAI
 import json
 
 # Configuración de la página
-st.set_page_config(page_title="Apuestas Deportivas del Efra - Generador IA", page_icon="🤖", layout="wide")
+st.set_page_config(page_title="AI Bet Generator PRO", page_icon="🤖", layout="wide")
 
 # Diccionario de iconos de deportes
 SPORT_ICONS = {
@@ -56,7 +56,7 @@ def get_sports_matches(api_key):
     return matches_this_week
 
 def generate_ai_analysis(api_key, match_info):
-    """Genera el análisis con OpenAI GPT-4o-mini con Picks por nivel de riesgo"""
+    """Genera el análisis PRO con OpenAI GPT-4o-mini"""
     client = OpenAI(api_key=api_key)
     
     odds_str = ""
@@ -70,24 +70,34 @@ def generate_ai_analysis(api_key, match_info):
             odds_str += "\n"
 
     prompt = f"""
-    Actúa como un tipster deportivo experto y analítico (estilo Oddsium). Analiza el partido de {match_info['sport_title']} entre {match_info['home_team']} y {match_info['away_team']}.
-    Cuotas actuales: {odds_str}
+    Actúa como un tipster deportivo experto de nivel PRO. Analiza el partido de {match_info['sport_title']} entre {match_info['home_team']} y {match_info['away_team']}.
+    Cuotas actuales (1X2): {odds_str}
     
-    Devuelve ÚNICAMENTE un JSON válido con esta estructura exacta. Para cada nivel de riesgo, incluye una descripción y el Pick específico:
+    Tu objetivo es dar opciones de apuestas alternativas y creativas. Devuelve ÚNICAMENTE un JSON válido con esta estructura exacta. 
+    Para CADA nivel de riesgo, genera exactamente 4 alternativas de apuestas usando mercados diversos (Tiros de esquina, Ambos marcan, Total de goles, Tarjetas, Hándicap, Tiros a puerta, Gol de jugador específico, etc.). 
+    Asegúrate de inventar cuotas realistas para los mercados que no están en las cuotas actuales.
+
+    Estructura del JSON:
     {{
         "conclusiones": ["Conclusión clave 1", "Conclusión clave 2", "Conclusión clave 3", "Conclusión clave 4"],
-        "bajo_riesgo": {{
-            "descripcion": "Descripción detallada de la apuesta de bajo riesgo",
-            "pick": "El Pick: [Apuesta] @ [Cuota] en [Casa]"
-        }},
-        "riesgo_medio": {{
-            "descripcion": "Descripción detallada de la apuesta de riesgo medio",
-            "pick": "El Pick: [Apuesta] @ [Cuota] en [Casa]"
-        }},
-        "alto_riesgo": {{
-            "descripcion": "Descripción detallada de la apuesta de alto riesgo",
-            "pick": "El Pick: [Apuesta] @ [Cuota] en [Casa]"
-        }},
+        "bajo_riesgo": [
+            {{"mercado": "Nombre del mercado", "explicacion": "Por qué es buena apuesta", "pick": "El Pick: [Apuesta] @ [Cuota]"}},
+            {{"mercado": "Nombre del mercado", "explicacion": "Por qué es buena apuesta", "pick": "El Pick: [Apuesta] @ [Cuota]"}},
+            {{"mercado": "Nombre del mercado", "explicacion": "Por qué es buena apuesta", "pick": "El Pick: [Apuesta] @ [Cuota]"}},
+            {{"mercado": "Nombre del mercado", "explicacion": "Por qué es buena apuesta", "pick": "El Pick: [Apuesta] @ [Cuota]"}}
+        ],
+        "riesgo_medio": [
+            {{"mercado": "Nombre del mercado", "explicacion": "Por qué es buena apuesta", "pick": "El Pick: [Apuesta] @ [Cuota]"}},
+            {{"mercado": "Nombre del mercado", "explicacion": "Por qué es buena apuesta", "pick": "El Pick: [Apuesta] @ [Cuota]"}},
+            {{"mercado": "Nombre del mercado", "explicacion": "Por qué es buena apuesta", "pick": "El Pick: [Apuesta] @ [Cuota]"}},
+            {{"mercado": "Nombre del mercado", "explicacion": "Por qué es buena apuesta", "pick": "El Pick: [Apuesta] @ [Cuota]"}}
+        ],
+        "alto_riesgo": [
+            {{"mercado": "Nombre del mercado", "explicacion": "Por qué es buena apuesta", "pick": "El Pick: [Apuesta] @ [Cuota]"}},
+            {{"mercado": "Nombre del mercado", "explicacion": "Por qué es buena apuesta", "pick": "El Pick: [Apuesta] @ [Cuota]"}},
+            {{"mercado": "Nombre del mercado", "explicacion": "Por qué es buena apuesta", "pick": "El Pick: [Apuesta] @ [Cuota]"}},
+            {{"mercado": "Nombre del mercado", "explicacion": "Por qué es buena apuesta", "pick": "El Pick: [Apuesta] @ [Cuota]"}}
+        ],
         "analisis_ia": "Un análisis profundo de 2 párrafos sobre el contexto del partido, motivaciones, tácticas y por qué se recomienda el pick.",
         "consenso": ["Resumen del consenso 1", "Resumen del consenso 2"]
     }}
@@ -107,7 +117,7 @@ def generate_ai_analysis(api_key, match_info):
 
 def main():
     st.markdown("<h1 style='text-align: center;'>🤖 AI Sports Bet Generator</h1>", unsafe_allow_html=True)
-    st.markdown("<p style='text-align: center; color: gray;'>Pronósticos IA en tiempo real | By Efrain Sarmiento ⏰</p>", unsafe_allow_html=True)
+    st.markdown("<p style='text-align: center; color: gray;'>Pronósticos IA Avanzados | By Efrain Sarmiento C.</p>", unsafe_allow_html=True)
     st.divider()
 
     # Leer claves desde Streamlit Secrets
@@ -179,7 +189,7 @@ def main():
         st.markdown(f"#### {match['icon']} {match['home_team']} vs {match['away_team']}")
         st.markdown(f"**{match['sport_title']} | 🕒 {hora_col} Hora Colombia**")
         
-        with st.expander("💰 Ver Cuotas y Análisis IA"):
+        with st.expander("💰 Ver Cuotas y Análisis IA PRO"):
             cuotas_data = {}
             for bm in match['bookmakers'][:5]:
                 for market in bm['markets']:
@@ -190,13 +200,13 @@ def main():
                             cuotas_data[bm['title']][outcome['name']] = outcome['price']
             
             if cuotas_data:
-                st.markdown("##### 💰 Cuotas Actuales")
+                st.markdown("##### 💰 Cuotas Actuales (1X2)")
                 df_cuotas = pd.DataFrame.from_dict(cuotas_data, orient='index')
                 st.table(df_cuotas)
                 st.caption("Las cuotas mostradas son contenido publicitario. 18+. Juega responsablemente.")
 
             if st.session_state.get('generate'):
-                with st.spinner("IA de OpenAI analizando datos..."):
+                with st.spinner("IA del BOT de Efra está analizando datos y generando 12 apuestas PRO..."):
                     ai_data = generate_ai_analysis(openai_api_key, match)
                 
                 if ai_data:
@@ -205,26 +215,25 @@ def main():
                         st.markdown(f"- {conc}")
                     st.divider()
 
-                    st.markdown("##### 🎯 Mejores apuestas para este partido")
+                    st.markdown("##### 🎯 Mejores apuestas para este partido (4 alternativas por riesgo)")
                     c1, c2, c3 = st.columns(3)
                     
-                    with c1:
-                        st.markdown("**🟢 Bajo Riesgo**")
-                        br = ai_data.get("bajo_riesgo", {})
-                        st.write(br.get("descripcion", "N/A"))
-                        st.success(f"**{br.get('pick', 'N/A')}**")
-                        
-                    with c2:
-                        st.markdown("**🟡 Riesgo Medio**")
-                        mr = ai_data.get("riesgo_medio", {})
-                        st.write(mr.get("descripcion", "N/A"))
-                        st.success(f"**{mr.get('pick', 'N/A')}**")
-                        
-                    with c3:
-                        st.markdown("**🔴 Alto Riesgo**")
-                        ar = ai_data.get("alto_riesgo", {})
-                        st.write(ar.get("descripcion", "N/A"))
-                        st.success(f"**{ar.get('pick', 'N/A')}**")
+                    def render_risk_column(col, title, emoji, data_list):
+                        with col:
+                            st.markdown(f"**{emoji} {title}**")
+                            if not data_list:
+                                st.write("N/A")
+                                return
+                            for idx, item in enumerate(data_list, 1):
+                                st.markdown(f"**{idx}. {item.get('mercado', 'Mercado')}**")
+                                st.write(item.get('explicacion', ''))
+                                st.success(f"**{item.get('pick', 'N/A')}**")
+                                if idx < len(data_list):
+                                    st.markdown("---") # Separador entre apuestas
+
+                    render_risk_column(c1, "Bajo Riesgo", "🟢", ai_data.get("bajo_riesgo", []))
+                    render_risk_column(c2, "Riesgo Medio", "🟡", ai_data.get("riesgo_medio", []))
+                    render_risk_column(c3, "Alto Riesgo", "🔴", ai_data.get("alto_riesgo", []))
 
                     st.caption("*Legal disclaimer: 18+. Solo jugadores nuevos. Se aplican términos y condiciones.*")
                     
