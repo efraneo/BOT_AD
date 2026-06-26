@@ -1,4 +1,5 @@
 import streamlit as st
+import streamlit.components.v1 as components
 from datetime import datetime, timedelta
 import pytz
 import requests
@@ -39,30 +40,13 @@ def generate_ai_analysis(api_key, match_info):
     
     prompt = f"""Actúa como un tipster deportivo de nivel PRO. Analiza {match_info['home_team']} vs {match_info['away_team']} ({match_info['sport_title']}).
     Cuotas actuales: {odds_str}
-    
-    Devuelve ÚNICAMENTE un JSON válido. Es OBLIGATORIO que cada array de riesgo tenga exactamente 4 apuestas alternativas (total 12). Usa mercados como tiros de esquina, ambos marcan, hándicap, tarjetas, etc.
-    
+    Devuelve ÚNICAMENTE un JSON válido. Es OBLIGATORIO que cada array de riesgo tenga exactamente 4 apuestas alternativas.
     Estructura exacta:
     {{
       "conclusiones": ["Conclusión 1", "Conclusión 2", "Conclusión 3", "Conclusión 4"],
-      "bajo_riesgo": [
-        {{"mercado": "Nombre", "explicacion": "Por qué", "pick": "El Pick: [Apuesta] @ [Cuota] en [Casa]"}},
-        {{"mercado": "Nombre", "explicacion": "Por qué", "pick": "El Pick: [Apuesta] @ [Cuota] en [Casa]"}},
-        {{"mercado": "Nombre", "explicacion": "Por qué", "pick": "El Pick: [Apuesta] @ [Cuota] en [Casa]"}},
-        {{"mercado": "Nombre", "explicacion": "Por qué", "pick": "El Pick: [Apuesta] @ [Cuota] en [Casa]"}}
-      ],
-      "riesgo_medio": [
-        {{"mercado": "Nombre", "explicacion": "Por qué", "pick": "El Pick: [Apuesta] @ [Cuota] en [Casa]"}},
-        {{"mercado": "Nombre", "explicacion": "Por qué", "pick": "El Pick: [Apuesta] @ [Cuota] en [Casa]"}},
-        {{"mercado": "Nombre", "explicacion": "Por qué", "pick": "El Pick: [Apuesta] @ [Cuota] en [Casa]"}},
-        {{"mercado": "Nombre", "explicacion": "Por qué", "pick": "El Pick: [Apuesta] @ [Cuota] en [Casa]"}}
-      ],
-      "alto_riesgo": [
-        {{"mercado": "Nombre", "explicacion": "Por qué", "pick": "El Pick: [Apuesta] @ [Cuota] en [Casa]"}},
-        {{"mercado": "Nombre", "explicacion": "Por qué", "pick": "El Pick: [Apuesta] @ [Cuota] en [Casa]"}},
-        {{"mercado": "Nombre", "explicacion": "Por qué", "pick": "El Pick: [Apuesta] @ [Cuota] en [Casa]"}},
-        {{"mercado": "Nombre", "explicacion": "Por qué", "pick": "El Pick: [Apuesta] @ [Cuota] en [Casa]"}}
-      ],
+      "bajo_riesgo": [{{"mercado": "Nombre", "explicacion": "Por qué", "pick": "El Pick: [Apuesta] @ [Cuota] en [Casa]"}}, {{"mercado": "Nombre", "explicacion": "Por qué", "pick": "El Pick: [Apuesta] @ [Cuota] en [Casa]"}}, {{"mercado": "Nombre", "explicacion": "Por qué", "pick": "El Pick: [Apuesta] @ [Cuota] en [Casa]"}}, {{"mercado": "Nombre", "explicacion": "Por qué", "pick": "El Pick: [Apuesta] @ [Cuota] en [Casa]"}}],
+      "riesgo_medio": [{{"mercado": "Nombre", "explicacion": "Por qué", "pick": "El Pick: [Apuesta] @ [Cuota] en [Casa]"}}, {{"mercado": "Nombre", "explicacion": "Por qué", "pick": "El Pick: [Apuesta] @ [Cuota] en [Casa]"}}, {{"mercado": "Nombre", "explicacion": "Por qué", "pick": "El Pick: [Apuesta] @ [Cuota] en [Casa]"}}, {{"mercado": "Nombre", "explicacion": "Por qué", "pick": "El Pick: [Apuesta] @ [Cuota] en [Casa]"}}],
+      "alto_riesgo": [{{"mercado": "Nombre", "explicacion": "Por qué", "pick": "El Pick: [Apuesta] @ [Cuota] en [Casa]"}}, {{"mercado": "Nombre", "explicacion": "Por qué", "pick": "El Pick: [Apuesta] @ [Cuota] en [Casa]"}}, {{"mercado": "Nombre", "explicacion": "Por qué", "pick": "El Pick: [Apuesta] @ [Cuota] en [Casa]"}}, {{"mercado": "Nombre", "explicacion": "Por qué", "pick": "El Pick: [Apuesta] @ [Cuota] en [Casa]"}}],
       "analisis_ia": "Análisis profundo de 2 párrafos.",
       "consenso": ["Resumen 1", "Resumen 2"]
     }}
@@ -72,6 +56,26 @@ def generate_ai_analysis(api_key, match_info):
         return json.loads(response.choices[0].message.content)
     except Exception as e:
         st.error(f"Error OpenAI: {e}"); return None
+
+def show_live_stream(match):
+    """Muestra opciones para ver el partido en vivo"""
+    st.markdown("##### 📺 Ver Partido en Vivo")
+    search_query = f"{match['home_team']} vs {match['away_team']} live"
+    
+    # Incrustar buscador de YouTube (transmisiones libres de derechos o canales deportivos)
+    st.info("Buscando transmisiones disponibles en YouTube...")
+    youtube_embed = f"""
+    <iframe width="100%" height="350" src="https://www.youtube.com/embed?listType=search&list={search_query.replace(' ', '+')}" 
+    frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+    """
+    components.html(youtube_embed, height=380)
+    
+    # Enlaces directos a plataformas oficiales
+    st.markdown("**¿No encuentras el video? Búscalo en las plataformas oficiales:**")
+    col1, col2, col3 = st.columns(3)
+    col1.markdown(f"[📺 ESPN]({'https://www.espn.com/watch/search/?q=' + match['home_team'].replace(' ', '+')})")
+    col2.markdown(f"[📺 DAZN]({'https://www.dazn.com/search?q=' + match['home_team'].replace(' ', '+')})")
+    col3.markdown(f"[🔎 Google]({'https://www.google.com/search?q=' + search_query.replace(' ', '+')})")
 
 def show_betting_app():
     st.markdown("<h1 style='text-align: center;'>🤖 AI Sports Bet Generator PRO</h1>", unsafe_allow_html=True)
@@ -93,7 +97,7 @@ def show_betting_app():
     if filtered:
         if st.button(f"🚀 Generar Análisis IA para {len(filtered)} partidos", use_container_width=True):
             st.session_state['generate'] = True
-            db.increment_analysis(st.session_state.user[2]) # Sumar análisis al usuario
+            db.increment_analysis(st.session_state.user[2])
             
     current_day = None
     for match in filtered:
@@ -103,7 +107,16 @@ def show_betting_app():
                 if current_day: st.divider()
                 st.markdown(f"### 📅 {fecha_str}"); current_day = fecha_str
         st.markdown(f"#### {match['icon']} {match['home_team']} vs {match['away_team']} - 🕒 {match['match_time'].strftime('%H:%M')}")
-        with st.expander("💰 Ver Cuotas y Análisis IA PRO"):
+        
+        with st.expander("💰 Ver Cuotas, Análisis IA y Transmisión"):
+            # Botón para ver el partido en vivo
+            if st.button(f"📺 ¿Quieres ver el partido en vivo?", key=f"live_{match['home_team']}_{match['away_team']}"):
+                st.session_state[f"show_live_{match['home_team']}_{match['away_team']}"] = True
+            
+            if st.session_state.get(f"show_live_{match['home_team']}_{match['away_team']}"):
+                show_live_stream(match)
+                st.divider()
+
             if st.session_state.get('generate'):
                 with st.spinner("Generando..."): ai_data = generate_ai_analysis(openai_api_key, match)
                 if ai_data:
@@ -118,4 +131,5 @@ def show_betting_app():
                                 st.success(f"**{item.get('pick','')}**")
                                 if i < len(ai_data.get(key, [])): st.markdown("---")
                     st.markdown("##### 📊 Análisis"); st.write(ai_data.get("analisis_ia", ""))
-            else: st.warning("Presiona el botón superior para analizar.")
+            else: 
+                st.warning("Presiona el botón superior para generar los análisis IA.")
