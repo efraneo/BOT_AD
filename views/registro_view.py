@@ -20,6 +20,10 @@ def mostrar():
     if st.session_state.get("registro_exitoso"): _exito()
 
 def _paso_1():
+    # BOTÓN VOLAR ARRIBA (Fuera de la columna para que nunca se esconda)
+    if st.button("← Volver al Inicio", use_container_width=True): 
+        st.session_state.pop("modo", None); st.rerun()
+
     c1, c2, c3 = st.columns([1, 1.2, 1])
     with c2:
         correo = st.text_input("📧 Correo", placeholder="tucorreo@ejemplo.com", key="correo_p1")
@@ -42,7 +46,6 @@ def _paso_1():
                     else: mostrar_alerta("danger", r["mensaje"])
             with b2:
                 if st.button("🔄 Reenviar", use_container_width=True): st.session_state["codigo_enviado"] = False; st.rerun()
-        if st.button("← Volver", use_container_width=True): st.session_state.pop("modo", None); st.rerun()
 
 def _paso_2():
     c1, c2, c3 = st.columns([1, 1.5, 1])

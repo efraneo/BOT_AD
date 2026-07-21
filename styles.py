@@ -5,31 +5,37 @@ ESTILOS_CSS = """
     #MainMenu {visibility: hidden;} footer {visibility: hidden;} header {visibility: hidden;}
     [data-testid="stSidebar"] { display: none !important; }
     
-    /* ═══════════════════════════════════════════════════════════
-       SOLUCIÓN DEFINITIVA AL BOTÓN "SHOW PASSWORD" DESBORDADO
-       ═══════════════════════════════════════════════════════════ */
-    .stTextInput > div > div > div > button,
-    .stTextInput label + div > div > div > button {
-        max-width: 40px !important;
-        min-width: 40px !important;
-        padding: 0px 5px !important;
-        font-size: 0px !important; /* Oculta el molesto texto "Show password" */
-        color: transparent !important;
-        overflow: hidden !important;
-        white-space: nowrap !important;
-        flex-shrink: 0 !important;
+    /* ═══════════════════════════════════════════════════════════════
+       SOLUCIÓN DEFINITIVA AL TEXTO "visibility" EN LAS CONTRASEÑAS
+       ═══════════════════════════════════════════════════════════════ */
+    .stTextInput > div > div > div > button {
+        width: 40px !important;
+        height: 40px !important;
+        padding: 0 !important;
         border: none !important;
-        background: transparent !important;
+        background: none !important;
         box-shadow: none !important;
+        position: relative !important;
     }
-    /* Si tiene un ícono SVG interno, lo deja visible */
+    /* Ocultar TODOS los textos internos del botón MENOS el dibujo (svg) */
+    .stTextInput > div > div > div > button *:not(svg) {
+        display: none !important;
+        visibility: hidden !important;
+        font-size: 0 !important;
+        height: 0 !important;
+        width: 0 !important;
+        overflow: hidden !important;
+        position: absolute !important;
+    }
+    /* Forzar a que el ojito (svg) se vea correctamente */
     .stTextInput > div > div > div > button svg {
-        font-size: 18px !important;
+        display: block !important;
+        visibility: visible !important;
+        width: 20px !important;
+        height: 20px !important;
         color: #666 !important;
-        width: 18px !important;
-        height: 18px !important;
     }
-    /* ═══════════════════════════════════════════════════════════ */
+    /* ═══════════════════════════════════════════════════════════════ */
 
     /* Solución a textos superpuestos generales */
     .stTextInput, .stSelectbox, .stDateInput, .stFileUploader, .stCheckbox {
