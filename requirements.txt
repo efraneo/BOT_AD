@@ -1,6 +1,10 @@
-streamlit
-pandas
-pytz
-requests
-openai
-plotly
+streamlit>=1.41.0
+supabase>=2.11.0
+python-dotenv>=1.0.1
+Pillow>=10.0.0
+numpy>=1.26.0
+rapidocr-onnxruntime>=1.2.0
+python-dateutil>=2.8.0
+plotly>=5.18.0
+pandas>=2.2.0
+openai>=1.12.0
