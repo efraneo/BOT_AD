@@ -20,8 +20,8 @@ def mostrar():
     if st.session_state.get("registro_exitoso"): _exito()
 
 def _paso_1():
-    # BOTÓN VOLAR ARRIBA (Fuera de la columna para que nunca se esconda)
-    if st.button("← Volver al Inicio", use_container_width=True): 
+    # ✅ BOTÓN FIJO ARRIBA PARA QUE NUNCA SE ESCONDA
+    if st.button("🏠 Volver al Menú Principal", use_container_width=True): 
         st.session_state.pop("modo", None); st.rerun()
 
     c1, c2, c3 = st.columns([1, 1.2, 1])
@@ -51,23 +51,8 @@ def _paso_2():
     c1, c2, c3 = st.columns([1, 1.5, 1])
     with c2:
         mostrar_alerta("info", f"✅ Correo: **{st.session_state.get('correo_confirmado', '')}**")
-        
-        # Habeas Data
-        st.markdown("""
-        <div style="background: linear-gradient(135deg, #f3f4f6, #e5e7eb); border: 1px solid #d1d5db; border-radius: 12px; padding: 15px; margin-bottom: 15px; border-left: 5px solid #1a237e;">
-            <div style="display: flex; align-items: center; margin-bottom: 8px;">
-                <div style="font-size: 20px; margin-right: 8px;">🔒</div>
-                <h4 style="margin: 0; color: #1a237e; font-size: 14px;">Autorización Habeas Data</h4>
-            </div>
-            <p style="font-size: 11px; color: #374151; line-height: 1.4; margin: 0 0 8px 0;">
-                En cumplimiento Ley 1581/2012, la <strong>Clínica San Rafael Alta Complejidad SAS</strong> tratará sus datos para control SST y verificación SOAT.
-            </p>
-            <p style="font-size: 10px; color: #6b7280; margin: 0;">Derechos ARCO: <strong>notificaciones@clinicasanrafael.com</strong></p>
-        </div>
-        """, unsafe_allow_html=True)
-
+        st.markdown("""<div style="background: linear-gradient(135deg, #f3f4f6, #e5e7eb); border: 1px solid #d1d5db; border-radius: 12px; padding: 15px; margin-bottom: 15px; border-left: 5px solid #1a237e;"><div style="display: flex; align-items: center; margin-bottom: 8px;"><div style="font-size: 20px; margin-right: 8px;">🔒</div><h4 style="margin: 0; color: #1a237e; font-size: 14px;">Autorización Habeas Data</h4></div><p style="font-size: 11px; color: #374151; line-height: 1.4; margin: 0 0 8px 0;">En cumplimiento Ley 1581/2012, la <strong>Clínica San Rafael Alta Complejidad SAS</strong> tratará sus datos para control SST y verificación SOAT.</p><p style="font-size: 10px; color: #6b7280; margin: 0;">Derechos ARCO: <strong>notificaciones@clinicasanrafael.com</strong></p></div>""", unsafe_allow_html=True)
         autorizado = st.checkbox("Acepto la Autorización de Tratamiento de Datos.", key="chk_habeas")
-
         with st.form("f_dp"):
             ced = st.text_input("🪪 ID/Cédula", key="ced")
             nom = st.text_input("👤 Nombres", key="nom")
@@ -123,7 +108,6 @@ def _paso_4():
         mostrar_alerta("success" if rs.get("calidad_ok") else "danger", rs.get("calidad_mensaje", ""))
         colores = {"Vigente": "success", "Por vencer": "warning", "Vencido": "danger", "No legible": "info"}
         mostrar_alerta(colores.get(rs.get("estado",""), "info"), rs.get("mensaje_general", ""))
-        
         b1, b2 = st.columns(2)
         with b1:
             if st.button("← Corregir", use_container_width=True): st.session_state["paso_registro"] = 3; st.rerun()
@@ -132,7 +116,6 @@ def _paso_4():
                 with st.spinner("📤 Enviando..."):
                     try: url_soat = db.subir_archivo_soat(st.session_state["archivo_soat_bytes"], st.session_state["archivo_soat_nombre"])
                     except Exception as e: mostrar_alerta("danger", f"Error archivo: {e}"); st.stop()
-                    
                     fv_iso = formatear_fecha_iso(rs["fecha_vencimiento"]) if rs.get("fecha_vencimiento") else None
                     datos_completos = {**dp, **dv, "soat_url": url_soat, "soat_nombre_archivo": st.session_state["archivo_soat_nombre"], "soat_vigencia": fv_iso, "soat_estado": rs.get("estado", "No legible"), "soat_calidad_imagen": rs.get("calidad_score", 0), "calidad_imagen_ok": rs.get("calidad_ok", False)}
                     res_bd = db.registrar_trabajador(datos_completos)

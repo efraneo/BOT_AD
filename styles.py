@@ -6,31 +6,25 @@ ESTILOS_CSS = """
     [data-testid="stSidebar"] { display: none !important; }
     
     /* ═══════════════════════════════════════════════════════════════
-       SOLUCIÓN DEFINITIVA AL TEXTO "visibility" EN LAS CONTRASEÑAS
+       BOMBA NUCLEAR CONTRA EL TEXTO "visibility" EN LAS CLAVES
        ═══════════════════════════════════════════════════════════════ */
-    .stTextInput > div > div > div > button {
-        width: 40px !important;
-        height: 40px !important;
-        padding: 0 !important;
-        border: none !important;
-        background: none !important;
-        box-shadow: none !important;
-        position: relative !important;
-    }
-    /* Ocultar TODOS los textos internos del botón MENOS el dibujo (svg) */
-    .stTextInput > div > div > div > button *:not(svg) {
-        display: none !important;
-        visibility: hidden !important;
-        font-size: 0 !important;
-        height: 0 !important;
-        width: 0 !important;
+    .stTextInput button {
+        font-size: 0px !important;
+        line-height: 0px !important;
+        color: transparent !important;
         overflow: hidden !important;
-        position: absolute !important;
     }
-    /* Forzar a que el ojito (svg) se vea correctamente */
-    .stTextInput > div > div > div > button svg {
+    .stTextInput button span,
+    .stTextInput button div,
+    .stTextInput button p {
+        display: none !important;
+        width: 0 !important;
+        height: 0 !important;
+        position: absolute !important;
+        left: -9999px !important;
+    }
+    .stTextInput button svg {
         display: block !important;
-        visibility: visible !important;
         width: 20px !important;
         height: 20px !important;
         color: #666 !important;
@@ -44,15 +38,9 @@ ESTILOS_CSS = """
     div.stButton > button, div.stForm > div > div > div > button {
         margin-top: 15px !important; margin-bottom: 10px !important;
     }
-    .stAlert {
-        margin-top: 10px !important; margin-bottom: 10px !important;
-    }
-    h1, h2, h3, h4 {
-        margin-top: 15px !important; margin-bottom: 10px !important;
-    }
-    hr {
-        margin-top: 25px !important; margin-bottom: 25px !important;
-    }
+    .stAlert { margin-top: 10px !important; margin-bottom: 10px !important; }
+    h1, h2, h3, h4 { margin-top: 15px !important; margin-bottom: 10px !important; }
+    hr { margin-top: 25px !important; margin-bottom: 25px !important; }
 
     /* Estilos de tarjetas y componentes */
     .metric-card { background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%); border-radius: 16px; padding: 24px; box-shadow: 0 2px 16px rgba(0,0,0,0.06); border: 1px solid rgba(0,0,0,0.05); transition: transform 0.2s, box-shadow 0.2s; margin-bottom: 10px !important; }
@@ -82,3 +70,22 @@ ESTILOS_CSS = """
 def cargar_estilos():
     import streamlit as st
     st.markdown(ESTILOS_CSS, unsafe_allow_html=True)
+    
+    # SCRIPT NUCLEAR: Busca el botón de la clave y destruye el texto "visibility" al cargar
+    st.markdown("""
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            setTimeout(function() {
+                var botones = document.querySelectorAll('.stTextInput button');
+                botones.forEach(function(btn) {
+                    var hijos = btn.childNodes;
+                    for(var i = 0; i < hijos.length; i++) {
+                        if(hijos[i].nodeName !== 'SVG') {
+                            hijos[i].remove();
+                        }
+                    }
+                });
+            }, 500);
+        });
+    </script>
+    """, unsafe_allow_html=True)
