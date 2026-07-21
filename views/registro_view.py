@@ -20,7 +20,7 @@ def mostrar():
     if st.session_state.get("registro_exitoso"): _exito()
 
 def _paso_1():
-    # ✅ BOTÓN FIJO ARRIBA PARA QUE NUNCA SE ESCONDA
+    # ✅ BOTÓN ARRIBA
     if st.button("🏠 Volver al Menú Principal", use_container_width=True): 
         st.session_state.pop("modo", None); st.rerun()
 
